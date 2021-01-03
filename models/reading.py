@@ -5,5 +5,4 @@ from .researcher import Researcher
 
 
 class Reading(DataPoint):
-    __parent_data_points__ = ((Researcher, 'author'),)
     url = Column(Text)

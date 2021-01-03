@@ -1,4 +1,4 @@
-from . import associations
+from .associations import Affiliation
 from .center import Center
 from .model import Model
 from .note import Note
