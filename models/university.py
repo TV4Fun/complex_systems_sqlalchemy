@@ -1,8 +1,5 @@
-from sqlalchemy import Column, Text
-
-from .data_point import DataPoint
+from .institute import Institute
 
 
-class University(DataPoint, plural='universities'):
-    url = Column(Text)
-    location = Column(Text)
+class University(Institute, plural='universities'):
+    pass

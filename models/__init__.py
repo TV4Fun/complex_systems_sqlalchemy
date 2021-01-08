@@ -1,5 +1,7 @@
 from .associations import Affiliation
 from .center import Center
+from .degree import Degree
+from .education import Education
 from .model import Model
 from .note import Note
 from .reading import Reading

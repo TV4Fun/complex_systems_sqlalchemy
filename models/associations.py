@@ -1,10 +1,10 @@
 from typing import Type, Optional
 
-from sqlalchemy import Table, Column, ForeignKey, Text
+from sqlalchemy import Table, Column, ForeignKey, Text, Index, Integer, Identity
 from sqlalchemy.orm import relationship
 
-from .center import Center
 from .data_point import DataPoint
+from .institute import Institute
 from .model import Model
 from .reading import Reading
 from .researcher import Researcher
@@ -56,13 +56,21 @@ class AssociationTable(Table):
 
 class Affiliation(Model):
     __tablename__ = 'researcher_affiliations'
-    researcher_id = Column(ForeignKey(Researcher.id), primary_key=True)
-    center_id = Column(ForeignKey(Center.id), primary_key=True)
-    type = Column(Text)
+    id = Column('affiliation_id', Integer, Identity(always=True), primary_key=True)
+    researcher_id = Column(ForeignKey(Researcher.id), nullable=False)
+    institute_id = Column(ForeignKey(Institute.id), nullable=False)
+    type = Column(Text, nullable=True)
+    __table_args__ = (Index('affiliations_idx', researcher_id, institute_id, type, unique=True),)
     researcher = relationship(Researcher, backref="affiliations")
-    center = relationship(Center, backref="affiliations")
+    institute = relationship(Institute, backref="affiliations")
+
+
+# class ReadingConnection(Model):
+#    __tablename__ = 'reading_connections'
+#    reading1_id = Column('reading1_id', ForeignKey(Reading.id), primary_key=True)
+#    reading2_id = Column('reading2_id', ForeignKey(Reading.id), primary_key=True)
 
 
 reading_topics = AssociationTable(Reading, Topic)
 researcher_readings = AssociationTable(Researcher, Reading)
-center_readings = AssociationTable(Center, Reading)
+institute_readings = AssociationTable(Institute, Reading)

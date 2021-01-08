@@ -1,5 +1,6 @@
 import typing
 
+import inflection
 import sqlalchemy
 import sqlalchemy.orm
 
@@ -9,7 +10,7 @@ import models.model
 class DataPoint(models.model.Model):
     def __init_subclass__(cls: typing.Type['DataPoint'], /, plural: typing.Optional[str] = None) -> None:
         super().__init_subclass__()
-        cls.base_name = cls.__name__.lower()
+        cls.base_name = inflection.underscore(cls.__name__)
         if plural:
             cls.plural = plural
         else:
@@ -21,12 +22,12 @@ class DataPoint(models.model.Model):
         cls.name = sqlalchemy.Column(cls.base_name, sqlalchemy.Text, nullable=False, index=True, unique=True)
         for parent in cls.__parent_data_points__:
             if isinstance(parent, type) and issubclass(parent, DataPoint):
-                setattr(cls, parent.id.name, sqlalchemy.Column(sqlalchemy.ForeignKey(parent.id)))
-                setattr(cls, parent.base_name, sqlalchemy.orm.relationship(parent, backref=cls.plural))
+                foreign_key = sqlalchemy.Column(parent.base_name + '_id', sqlalchemy.ForeignKey(parent.id))
+                setattr(cls, parent.id.name, foreign_key)
+                setattr(cls, parent.base_name,
+                        sqlalchemy.orm.relationship(parent, backref=cls.plural, foreign_keys=(foreign_key,)))
             else:
-                parent, parent_base_name = parent
-                setattr(cls, parent_base_name + '_id', sqlalchemy.Column(sqlalchemy.ForeignKey(parent.id)))
-                setattr(cls, parent_base_name, sqlalchemy.orm.relationship(parent, backref=cls.plural))
+                raise TypeError("Did not recognize type of parent.")
 
     __abstract__ = True
     __parent_data_points__: typing.Collection[

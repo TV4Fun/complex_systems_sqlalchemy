@@ -1,12 +1,9 @@
-from sqlalchemy import Column, Text
-
 from .data_point import DataPoint
-from .university import University
+from .institute import Institute
 from .reading import Reading
-from .topic import Topic
-from .center import Center
 from .researcher import Researcher
+from .topic import Topic
 
 
 class Note(DataPoint):
-    __parent_data_points__ = (Reading, Topic, Researcher, University, Center)
+    __parent_data_points__ = (Reading, Topic, Researcher, Institute)

@@ -1,9 +1,7 @@
-from .data_point import DataPoint
-from sqlalchemy import Column, Text
+from .institute import Institute
 from .university import University
 
 
-class Center(DataPoint):
+class Center(Institute):
+    """Research center that is not a university"""
     __parent_data_points__ = (University,)
-    url = Column(Text)
-    location = Column(Text)
