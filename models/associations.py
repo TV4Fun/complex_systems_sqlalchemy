@@ -1,7 +1,8 @@
-from typing import Type, Optional
+from typing import Type, Optional, TypeVar, Callable, Union
 
 from sqlalchemy import Table, Column, ForeignKey, Text, Index, Integer, Identity
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.associationproxy import association_proxy
 
 from .data_point import DataPoint
 from .institute import Institute
@@ -26,7 +27,7 @@ def association_table(left: Type[DataPoint], right: Type[DataPoint], right_name:
         left_base_name + '_' + right_name,
         Model.metadata,
         left_id,
-        right_id
+        right_id,
     )
     setattr(left, right_name, relationship(right, backref=left_plural, secondary=new_table))
 
@@ -43,6 +44,17 @@ class Affiliation(Model):
     researcher = relationship(Researcher, backref="affiliations")
     institute = relationship(Institute, backref="affiliations")
 
+    @classmethod
+    def creator(cls: Type['Affiliation'], arg_name) -> Callable[[Model], 'Affiliation']:
+        def the_creator(arg: Model) -> 'Affiliation':
+            kwargs = {arg_name: arg}
+            return cls(**kwargs)
+
+        return the_creator
+
+
+Researcher.institutes = association_proxy('affiliations', 'institute', creator=Affiliation.creator('institute'))
+Institute.researchers = association_proxy('affiliations', 'researcher', creator=Affiliation.creator('researcher'))
 
 # class ReadingConnection(Model):
 #    __tablename__ = 'reading_connections'

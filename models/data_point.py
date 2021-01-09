@@ -29,9 +29,12 @@ class DataPoint(models.model.Model):
             else:
                 raise TypeError("Did not recognize type of parent.")
 
+    def __init__(self, name: str, **kwargs) -> None:
+        super().__init__(name=name, **kwargs)
+
     __abstract__ = True
-    __parent_data_points__: typing.Collection[
-        typing.Union[typing.Type['DataPoint'], typing.Tuple[typing.Type['DataPoint'], str]]] = ()
+    __parent_data_points__: typing.Collection[typing.Type['DataPoint']] = ()
+    __tablename__: str
     id: sqlalchemy.Column
     name: sqlalchemy.Column
     plural: str
