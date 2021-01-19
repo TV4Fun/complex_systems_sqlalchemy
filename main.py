@@ -20,9 +20,14 @@ def rebuild():
     caltech = University('CalTech', location='Pasadena')
     indiana = University('Indiana University', url='https://www.indiana.edu/academics/schools.html',
                          location='Indiana')
+    umich = University('University of Michigan', url='https://umich.edu/', location='Ann Arbor, MI')
     karolinska = University('Karolinska Institutet', url='https://ki.se/en', location='Stockholm, Sweden')
     oxford = University('Oxford', url="https://www.ox.ac.uk/", location='Oxford, England')
     cambridge = University('Cambridge', url='https://www.cam.ac.uk/', location='Cambridge, England')
+    warwick = University('University of Warwick', location='Coventry, England', url='https://warwick.ac.uk/')
+    chalmers = University('Chalmers University of Technology', location='Gothenburg, Sweden',
+                          url='https://www.chalmers.se/en/education/programmes/masters-info/Pages/Complex-Adaptive-Systems.aspx')
+    northwestern = University('Northwestern University', location='Chicago', url='https://www.northwestern.edu/')
 
     # Degrees
     phd = Degree("PhD")
@@ -44,6 +49,15 @@ def rebuild():
     nrl = Center('United States Naval Research Laboratory')
     quanta = Center("Quanta Magazine", url="https://www.quantamagazine.org/")
     adl = Center('Algorithmic Dynamics Lab', url='https://www.algorithmicdynamics.net/', university=karolinska)
+    wsc = Center('Warwick Complexity Complex', url='https://warwick.ac.uk/fac/cross_fac/complexity', university=warwick)
+    chalmers_complex = Center('Center for Complex Systems Research, Chalmers',
+                              url='https://www.chalmers.se/en/departments/see/research/prt/Pages/Complex-systems.aspx',
+                              university=chalmers)
+    clt = Center('European Centre for Living Technology', url='https://www.unive.it/pag/23664/',
+                 location='Venice, Italy')
+    complex_umich = Center('Center for the study of complex systems', url='https://lsa.umich.edu/cscs',
+                           university=umich, location='Ann Arbor, MI')
+    nico = Center('Northwestern Institute on Complex Systems', url='https://www.nico.northwestern.edu/')
 
     # Researchers
     jim_crutchfield = Researcher('Jim Crutchfield', university=uc_davis)
@@ -77,7 +91,6 @@ def rebuild():
     zenil.affiliations.append(Affiliation(institute=oxford, type="Senior Researcher, Department of Computer Science"))
     zenil.affiliations.append(Affiliation(institute=cambridge,
                                           type="Associated Senior Researcher, Synthetic Biology Strategic Research Initiative"))
-    print(zenil.institutes)
 
     # Readings
     comp_mech_origins = Reading('Dynamics, Information, and Organization: The Origins of Computational Mechanics',
@@ -116,6 +129,7 @@ def rebuild():
     alg_prob.researchers.append(solomonoff)
     alg_prob.researchers.append(zenil)
     alg_prob.topics.append(alg_comp)
+    aid.connections.add(alg_prob)
 
     # Notes
     sync_quantum = Note("Long range synchronization like this almost sounds like quantum entanglement",

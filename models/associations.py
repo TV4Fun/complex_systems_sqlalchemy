@@ -1,8 +1,9 @@
 from typing import Type, Optional, TypeVar, Callable, Union
 
-from sqlalchemy import Table, Column, ForeignKey, Text, Index, Integer, Identity
+from sqlalchemy import Table, Column, ForeignKey, Text, Index, Integer, Identity, CheckConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.sql.expression import or_
 
 from .data_point import DataPoint
 from .institute import Institute
@@ -21,13 +22,11 @@ def association_table(left: Type[DataPoint], right: Type[DataPoint], right_name:
     if not right_name:
         right_name = right.plural
 
-    left_id = Column(left.id.name, ForeignKey(left.id), primary_key=True)
-    right_id = Column(right.id.name, ForeignKey(right.id), primary_key=True)
     new_table = Table(
         left_base_name + '_' + right_name,
         Model.metadata,
-        left_id,
-        right_id,
+        Column(left.id.name, ForeignKey(left.id), primary_key=True),
+        Column(right.id.name, ForeignKey(right.id), primary_key=True),
     )
     setattr(left, right_name, relationship(right, backref=left_plural, secondary=new_table))
 
@@ -56,11 +55,11 @@ class Affiliation(Model):
 Researcher.institutes = association_proxy('affiliations', 'institute', creator=Affiliation.creator('institute'))
 Institute.researchers = association_proxy('affiliations', 'researcher', creator=Affiliation.creator('researcher'))
 
-# class ReadingConnection(Model):
-#    __tablename__ = 'reading_connections'
-#    reading1_id = Column('reading1_id', ForeignKey(Reading.id), primary_key=True)
-#    reading2_id = Column('reading2_id', ForeignKey(Reading.id), primary_key=True)
+reading1_id = Column('reading1_id', ForeignKey(Reading.id), primary_key=True)
+reading2_id = Column('reading2_id', ForeignKey(Reading.id), primary_key=True)
 
+reading_connections = Table('reading_connections', Model.metadata, reading1_id, reading2_id,
+                            CheckConstraint('reading1_id != reading2_id'))
 
 reading_topics = association_table(Reading, Topic)
 researcher_readings = association_table(Researcher, Reading)
